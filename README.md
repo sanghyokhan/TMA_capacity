@@ -11,6 +11,7 @@ Workflow
 
 <train 폴더>
 * lgbr로 학습하고, 분석
+* lgbr_a.pkl, lgbr_d.pkl 로 저장
 
 <test 폴더>
 * test
