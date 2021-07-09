@@ -20,5 +20,5 @@
 * lgbr_a.pkl, lgbr_d.pkl 로 저장
 <br>
 
-<test 폴더>
-* test
+<evaluate 폴더>
+* evaluate
