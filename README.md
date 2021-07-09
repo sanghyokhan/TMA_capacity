@@ -10,7 +10,7 @@
 <br>
 
 <eda 폴더>
-* data_engineering에서 필요한 데이터만 두고 Data.csv로 저장 - 현재 생략(data폴더에서 바로 Data_csv 생성)
+* data_engineering에서 필요한 데이터만 두고 Data.csv로 저장 - 현재 생략(data폴더에서 바로 Data.csv 생성)
 
 ![Input_data](https://user-images.githubusercontent.com/85796140/125006955-4577da00-e09a-11eb-8fe5-5e415e4441b1.png)
 <br>
