@@ -5,8 +5,8 @@
 <br>
 
 <data>
-* 필요한 경우 각각 데이터(TAF 등)에서 csv파일 로 만듦
-* Data_Concatenate에서 모든 데이터를 하나의 Dataframe으로 만들고 'data_raw.csv' 로 저장 (8760 rows × 92 columns)
+* 필요한 경우 각각 데이터(TAF 등)에서 csv파일 로 만듦 <br>
+* Data_Concatenate에서 모든 데이터를 하나의 Dataframe으로 만들고 'data_raw.csv' 로 저장 (8760 rows × 92 columns) <br>
 <br>
 
 <eda>
