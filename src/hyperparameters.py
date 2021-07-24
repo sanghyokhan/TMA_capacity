@@ -1,6 +1,5 @@
 # hyperparameters
 
-import models
 from sklearn.tree import DecisionTreeRegressor
 from ngboost.distns import Normal
 from ngboost.scores import CRPScore, MLE

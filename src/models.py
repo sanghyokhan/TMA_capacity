@@ -1,7 +1,7 @@
 # models
 
 import hyperparameters
-from lightgbm import LGBMRegressor, plot_metric
+from lightgbm import LGBMRegressor
 from ngboost import NGBRegressor   
 
 models = {
