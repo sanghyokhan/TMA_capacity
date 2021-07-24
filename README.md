@@ -1,7 +1,9 @@
+
 # TMA_capacity
 
 <br>
-![Input_data](https://user-images.githubusercontent.com/85796140/125006955-4577da00-e09a-11eb-8fe5-5e415e4441b1.png)
+
+![Input_data](https://user-images.githubusercontent.com/85796140/126852091-31d6562d-7469-41b6-958d-464f91aaa36e.png)
 
 <br>
 <br>
