@@ -1,7 +1,10 @@
 
 
 1. 1시간만의 예측이 아닌 24시간까지 예측하도록 모형 수정 -> train.py
+    -> # ngbr 두시간 이상 안됨
 2. 결과 그래프 저장하는 스크립트 짜기 -> result.py
+    -> # 2시간 이상 결과가 쭉 나오도록 수정 (맨 위에 load data부터 고쳐야함)
+
 3. eda, data preprocessing (scklearn.preprocessing / PCA / dimensionality reduction ) 
 
 
