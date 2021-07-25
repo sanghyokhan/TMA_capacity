@@ -1,3 +1,5 @@
+# test data돌릴때 쓸 스크립트
+
 import os
 import config
 import pandas as pd

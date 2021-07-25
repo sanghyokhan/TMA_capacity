@@ -66,14 +66,27 @@ tree_learner_params = {'criterion' : "friedman_mse",         # “mse”, “fri
                         'max_leaf_nodes' : 127,              # Grow a tree with 'max_leaf_nodes' in best-first fashion
                         'splitter' : "best",                 # The strategy used to choose the split at each node
                         'random_state' : seed}
-tree_learner = DecisionTreeRegressor(**tree_learner_params)  # models에서 가져오려니 오류남
+tree_learner = DecisionTreeRegressor(**tree_learner_params)  # models에서 넣고 가져오려니 오류남
 
 
 ngbr_params_a = {'Dist' : Normal,              # A distribution from ngboost.distns : Normal, LogNormal, Exponential...
                 'Score' : MLE,                 # rule to compare probabilistic predictions P̂ to the observed data y, from ngboost.scores : LogScore, CRPScore...
                 'Base' : tree_learner,         # base learner to use in the boosting algorithm
                 'natural_gradient' : True,     # logical flag indicating whether the natural gradient should be used
-                'verbose' : True,
+                'verbose' : False,
+                'n_estimators' : 10000000, 
+                'learning_rate' : 0.001,
+                'minibatch_frac' : 0.8,        # the percent subsample of rows to use in each boosting iteration
+                'col_sample' : 0.8,            
+                'tol' : 1e-5,                  # numerical tolerance to be used in optimization
+                'random_state' : seed}
+
+
+ngbr_params_d = {'Dist' : Normal,              # A distribution from ngboost.distns : Normal, LogNormal, Exponential...
+                'Score' : MLE,                 # rule to compare probabilistic predictions P̂ to the observed data y, from ngboost.scores : LogScore, CRPScore...
+                'Base' : tree_learner,         # base learner to use in the boosting algorithm
+                'natural_gradient' : True,     # logical flag indicating whether the natural gradient should be used
+                'verbose' : False,
                 'n_estimators' : 10000000, 
                 'learning_rate' : 0.001,
                 'minibatch_frac' : 0.8,        # the percent subsample of rows to use in each boosting iteration

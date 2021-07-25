@@ -17,7 +17,7 @@ warnings.simplefilter('ignore')
 
 
 
-def run(model):
+def run(model, hour):
     
     # initialize result
     global result_arrival, result_departure
@@ -31,9 +31,8 @@ def run(model):
 
     # split train, validation
     df_train_arrival, df_valid_arrival = train_test_split(train_data_arrival, test_size=0.1, random_state = 13)
-    
 
-    """ Deaprture """
+    """ Departure """
     # 1st hour prediction with actual previous hour's AAR
     # load selected prediction time data
     train_data_departure_raw = pd.read_csv( os.path.join(config.input_dir, 'departure_train.csv'), index_col = 0)
@@ -46,9 +45,8 @@ def run(model):
 
     """ 2-24 hour prediction """
     # start for loop
-    for time in range(1,25,1):
+    for time in range(1,hour,1):
         
-
         """Arrival"""
         # split label and convert to np.array
         X_train_a = df_train_arrival.drop('label', axis = 1).values
@@ -68,8 +66,7 @@ def run(model):
                             val_sample_weight = None,               # Weights of eval data
                             train_loss_monitor = None,              # custom score or set of scores to track on the training set during training
                             val_loss_monitor = None,                # custom score or set of scores to track on the validation set during training
-                            early_stopping_rounds = 10,
-                            verbose = True)
+                            early_stopping_rounds = 10)
         
         # lgbr_arrival
         elif model == 'lgbr':                                              
@@ -128,8 +125,7 @@ def run(model):
                             val_sample_weight = None,               # Weights of eval data
                             train_loss_monitor = None,              # custom score or set of scores to track on the training set during training
                             val_loss_monitor = None,                # custom score or set of scores to track on the validation set during training
-                            early_stopping_rounds = 10,
-                            verbose = True)
+                            early_stopping_rounds = 10)
         
         # lgbr_arrival
         elif model == 'lgbr':                                              
@@ -192,7 +188,7 @@ def run(model):
         train_data_departure['P_AAR'] = total_pred_a
         train_data_departure['P_ADR'] = total_pred_d
 
-        # update remainder / remainder = demand - prediction *******
+        # update remainder / remainder = demand - prediction *****
         remainder_arrival = train_data_arrival['EAD'] - total_pred_a
         remainder_departure = train_data_departure['EDD'] - total_pred_d
         remainder_arrival[remainder_arrival < 0] = 0
@@ -210,7 +206,6 @@ def run(model):
         train_data_departure['EAD'] = np.roll(train_data_departure['EAD'], -1 * time)
         train_data_departure['EDD'] = np.roll(train_data_departure['EDD'], -1 * time)        
 
-
         # NaN data to 0
         for i in range(1,time+1):
             train_data_arrival['label'].iloc[-1*i] = 0
@@ -227,17 +222,18 @@ def run(model):
                                                          'CLA_2LYR', 'BASE_2LYR', 'CLA_3LYR', 'BASE_3LYR', 'CLA_4LYR', 'BASE_4LYR', 'RVR'], axis=1)
 
         # split train, validation
-        df_train_arrival, df_valid_arrival = train_test_split(train_data_arrival, test_size=0.1, random_state = 13)
-        df_train_departure, df_valid_departure = train_test_split(train_data_departure, test_size=0.1, random_state = 13)
+        df_train_arrival, df_valid_arrival = train_test_split(train_data_arrival.reset_index(drop = True), test_size=0.1, random_state = 13)
+        df_train_departure, df_valid_departure = train_test_split(train_data_departure.reset_index(drop = True), test_size=0.1, random_state = 13)
 
     # end for loop
 
-    result_arrival.to_csv('../result/result_arrival.csv')
-    train_data_arrival.to_csv('../result/final_arrival_train_dataframe.csv')
-    result_departure.to_csv('../result/result_departure.csv')
-    train_data_departure.to_csv('../result/final_departure_train_dataframe.csv')
+    result_arrival.to_csv(f'../result/result_arrival_{model}.csv')
+    train_data_arrival.to_csv(f'../result/final_arrival_train_dataframe_{model}.csv')
+    result_departure.to_csv(f'../result/result_departure_{model}.csv')
+    train_data_departure.to_csv(f'../result/final_departure_train_dataframe_{model}.csv')
 
 # end def
+
 
 
 
@@ -256,16 +252,22 @@ if __name__ =='__main__':
     parser = argparse.ArgumentParser()
 
     # add arguments
-    # parser.add_argument('--taf_time', type = int)
     parser.add_argument('--model', type = str)
+    parser.add_argument('--hour', type = int)
 
     # save input to args
     args = parser.parse_args()
 
     # print arguments
-    print(f'\n model : {args.model} \n')
-
+    print('\ntrain.py')
+    print(f'model : {args.model}')
+    print(f'Prediction hour : {args.hour} \n')
+    
     # run
-    run(
-        model = args.model,
-        )
+    if args.hour > 24:
+        print('Exceeding 24h is not recommended \n')
+    else :
+        run(
+            model = args.model,
+            hour = args.hour
+            )
