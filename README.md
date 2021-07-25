@@ -20,7 +20,7 @@ input <br>
 * Remainder는 원래 직전 시간 "수요 - 실제 AAR/ADR - 캔슬된 비행 수 (+ 0이하 값은 0으로 바꿈)"  ->  2시간 이상의 시간 예측 시, "수요 - Predicted AAR/ADR" 로 바뀜
 <br>
 
-models <br>
+models -> github tracking X<br>
 * 학습된 model 저장 <br>
 * lgbr_pval_a.csv, lgbr_pval_d.csv, lgbr_predict_a.csv,lgbr_predict_d.csv 로 CV data 저장 -> stacking <br>
 <br>
