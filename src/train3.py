@@ -1,3 +1,15 @@
+##################################################################################################################################
+##################################################################################################################################
+##################################################################################################################################
+
+# ngbr을 for loop안에 돌리면 오류가 남
+
+
+##################################################################################################################################
+##################################################################################################################################
+##################################################################################################################################
+
+
 import os
 import joblib
 import argparse
@@ -17,7 +29,7 @@ warnings.simplefilter('ignore')
 
 
 
-def run(model, hour):
+def run(clf_arrival, clf_departure, model, hour):
     
     # initialize result
     global result_arrival, result_departure
@@ -53,9 +65,6 @@ def run(model, hour):
         y_train_a = df_train_arrival['label'].values
         X_val_a = df_valid_arrival.drop('label', axis = 1).values
         y_val_a = df_valid_arrival['label'].values
-
-        # model fitting
-        clf_arrival = models.models[model + '_arrival']
 
         # ngbr_arrival
         if model == 'ngbr':
@@ -113,10 +122,7 @@ def run(model, hour):
         X_val_d = df_valid_departure.drop('label', axis = 1).values
         y_val_d = df_valid_departure['label'].values
 
-        # model fitting
-        clf_departure = models.models[model + '_departure']
-
-        # ngbr_arrival
+        # ngbr_departure
         if model == 'ngbr':                         
             clf_departure.fit(X_train_d, y_train_d,
                             X_val = X_val_d,
@@ -127,7 +133,7 @@ def run(model, hour):
                             val_loss_monitor = None,                # custom score or set of scores to track on the validation set during training
                             early_stopping_rounds = 10)
         
-        # lgbr_arrival
+        # lgbr_departure
         elif model == 'lgbr':                                              
             clf_departure.fit(X_train_d, y_train_d,
                             sample_weight = None,                   # Weights of training data
@@ -165,7 +171,7 @@ def run(model, hour):
         joblib.dump(clf_departure, os.path.join(config.output, f'{model}_departure_{time}.bin'))
 
 
-        """ for following hour prediction """
+        """ for following hour prediction, modify train dataset"""
         # select proper taf data time
         if time < 7 :
             taf_time = 6
@@ -268,14 +274,22 @@ if __name__ =='__main__':
         print('Exceeding 24h is not recommended \n')
         ans = input('Continue? [Y/n] : ')
         if ans == 'Y':
+            clf_arrival = models.models[args.model + '_arrival']
+            clf_departure = models.models[args.model + '_departure']
             run(
+                clf_arrival,
+                clf_departure,
                 model = args.model,
                 hour = args.hour
                 )
         else :
             print('\nTraining terminated\n')
     else :
+        clf_arrival = models.models[args.model + '_arrival']
+        clf_departure = models.models[args.model + '_departure']
         run(
+            clf_arrival,
+            clf_departure, 
             model = args.model,
             hour = args.hour
             )

@@ -6,9 +6,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import config
 from datetime import date
 from sklearn.metrics import mean_squared_error, r2_score
+
+import config
+
 
 # option
 warnings.simplefilter('ignore')
@@ -42,18 +44,24 @@ def result(model, hour):
 
     """ Feature Importance """
     # arrival
-    imp_arrival = pd.DataFrame({'feature': data_arrival.drop('label', axis = 1).columns, 'importance': clf_arrival.feature_importances_})
+    if model == 'ngbr':
+        imp_arrival = pd.DataFrame({'feature': data_arrival.drop('label', axis = 1).columns, 'importance': clf_arrival.feature_importances_[0]})
+    else :
+        imp_arrival = pd.DataFrame({'feature': data_arrival.drop('label', axis = 1).columns, 'importance': clf_arrival.feature_importances_})
     imp_arrival = imp_arrival.sort_values('importance').set_index('feature')
     imp_arrival.plot(kind='barh', figsize = (20,20))
     plt.legend(loc='lower right')
-    plt.savefig(save_dir + f'/arrival_{hour}hour_feature_importance.png')
+    plt.savefig(save_dir + f'/{model}_arrival_{hour}hour_feature_importance.png')
 
     # departure
-    imp_departure = pd.DataFrame({'feature': data_departure.drop('label', axis = 1).columns, 'importance': clf_departure.feature_importances_})
+    if model == 'ngbr':
+        imp_departure = pd.DataFrame({'feature': data_departure.drop('label', axis = 1).columns, 'importance': clf_departure.feature_importances_[0]})
+    else :
+        imp_departure = pd.DataFrame({'feature': data_departure.drop('label', axis = 1).columns, 'importance': clf_departure.feature_importances_})
     imp_departure = imp_departure.sort_values('importance').set_index('feature')
     imp_departure.plot(kind='barh', figsize = (20,20))
     plt.legend(loc='lower right')
-    plt.savefig(save_dir + f'/departure_{hour}hour_feature_importance.png')
+    plt.savefig(save_dir + f'/{model}_departure_{hour}hour_feature_importance.png')
 
 
     """ Distribution """
@@ -69,7 +77,7 @@ def result(model, hour):
     ax1_arrival.set(xlabel='Actual Arrival Rate', ylabel='Arrival Prediction')
     ax2_arrival.set(xlabel='Arrivals per hour', ylabel='Count')
     plt.legend() 
-    plt.savefig(save_dir + f'/arrival_{hour}hour_distribution.png')
+    plt.savefig(save_dir + f'/{model}_arrival_{hour}hour_distribution.png')
 
     # departure
     fig_departure = plt.figure(figsize=(20, 10))
@@ -83,26 +91,8 @@ def result(model, hour):
     ax1_departure.set(xlabel='Actual Departure Rate', ylabel='Departure Prediction')
     ax2_departure.set(xlabel='Departures per hour', ylabel='Count')
     plt.legend() 
-    plt.savefig(save_dir + f'/departure_{hour}hour_distribution.png')
+    plt.savefig(save_dir + f'/{model}_departure_{hour}hour_distribution.png')
 
-
-
-
-"""
-X_train_a = train_data_arrival.drop('label', axis = 1).values
-y_train_a = train_data_arrival['label'].values
-
-train_pred_a = clf.predict(X_train_a)
-train_rmse_a = np.sqrt(mean_squared_error(y_train_a, train_pred_a))
-print(train_rmse_a)
-"""
-
-
-
-# *** training data에는 AAR, ADR 둘다 없어야 함
-# 0부터 시작
-# max capacity 선 추가
-# 원래 demand에 대한 predict 점 추가
 
 
 
@@ -120,9 +110,6 @@ def max_capacity(example, hour, model):    # 50까지 늘림
     data_departure_raw = pd.read_csv( os.path.join(config.input_dir, 'departure_train.csv'), index_col = 0)
     data_departure = data_departure_raw[data_departure_raw['taf'] == 6].reset_index(drop = True)            # 맨 처음은 6시간 taf 쓰기
     data_departure = data_departure.drop('taf', axis = 1)
-
-    # Data_raw : Data_#과 동일   ->  data_arrival / data_departure
-    # Data_m : Data_# 에서 AAR, ADR 뺀 것  -> data_arrival.drop('label', axis = 1) / data_departure.drop('label', axis = 1)
 
     # extra
     demand = 80
@@ -221,21 +208,45 @@ def max_capacity(example, hour, model):    # 50까지 늘림
     plt.text(1.1, 0.05, capacity_text,
              fontsize=15, style='italic', transform=ax.transAxes, bbox={'facecolor': 'grey', 'alpha': 0.05, 'pad': 6})
     
-    plt.savefig(save_dir + f'/{hour}hour_maximum_capaicty.png', bbox_inches='tight', pad_inches=1)
+    plt.savefig(save_dir + f'/{model}_{hour}hour_maximum_capaicty.png', bbox_inches='tight', pad_inches=1)
+
+
 
     
 
-
-
-"""
-#############################################################################################################
-#############################################################################################################
-#############################################################################################################
-
 #ngboost
+def plot_result(start, model, hour):   
 
-def plot_result(prediction, start=0, end=10):   
+    end = start + 24
 
+    # load trained model
+    clf_arrival = joblib.load(config.output + f'{model}_arrival_{hour}.bin') 
+    clf_departure = joblib.load(config.output + f'{model}_departure_{hour}.bin') 
+
+    # load data
+    data_arrival_raw = pd.read_csv( os.path.join(config.input_dir, 'arrival_train.csv'), index_col = 0)
+    data_arrival = data_arrival_raw[data_arrival_raw['taf'] == 6].reset_index(drop = True)   
+    data_arrival = data_arrival.drop('taf', axis = 1)
+    data_departure_raw = pd.read_csv( os.path.join(config.input_dir, 'departure_train.csv'), index_col = 0)
+    data_departure = data_departure_raw[data_departure_raw['taf'] == 6].reset_index(drop = True)            # 맨 처음은 6시간 taf 쓰기
+    data_departure = data_departure.drop('taf', axis = 1)
+    y_a = data_arrival['label']
+    y_d = data_departure['label']
+
+
+    """ arrival """
+    # prediction dataframe
+    y_a_pred = clf_arrival.pred_dist(data_arrival.drop('label', axis = 1))
+    predictions = pd.DataFrame(y_a_pred.loc, columns=['Predictions'])
+    predictions_sd = pd.DataFrame(y_a_pred.scale, columns=['Standard Deviation'])
+    predictions_upper = pd.DataFrame(y_a_pred.dist.interval(0.95)[1], columns=['95% Predictions_upper'])    # 95% prediction interval
+    predictions_lower = pd.DataFrame(y_a_pred.dist.interval(0.95)[0], columns=['95% Predictions_lower'])
+    Actual_AAR = pd.DataFrame({'Actual AAR':y_a})
+    Date = pd.date_range(start='1/1/2019', end='12/31/2019 23:00', freq = '1H')
+    prediction =  pd.concat([pd.DataFrame({'Date':Date}), Actual_AAR, predictions, predictions_sd, 
+                            predictions_upper, predictions_lower], axis = 1)
+
+    # plot prediction interval
     fig, ax = plt.subplots(figsize=(22, 10))
     plt.fill_between(prediction['Date'][start:end], prediction['95% Predictions_lower'][start:end],  prediction['95% Predictions_upper'][start:end], 
                      label = '95% Prediction Interval', color='gray', alpha=0.5)
@@ -247,14 +258,41 @@ def plot_result(prediction, start=0, end=10):
     #plt.title('Hourly Power Consumption Actual vs. Predicted Values with Prediction Intervals')
     plt.xlabel('Time')
     plt.ylabel('Arrivals per hour')
-    plt.show()
-
-plot_result(prediction, start = 8230, end = 8300)
-
-"""
+    plt.savefig(save_dir + f'/{model}_arrival_{hour}hour_prediction_interval.png', bbox_inches='tight', pad_inches=1)
 
 
+    """ departure """
+    # prediction dataframe
+    y_d_pred = clf_departure.pred_dist(data_departure.drop('label', axis = 1))
+    predictions = pd.DataFrame(y_d_pred.loc, columns=['Predictions'])
+    predictions_sd = pd.DataFrame(y_d_pred.scale, columns=['Standard Deviation'])
+    predictions_upper = pd.DataFrame(y_d_pred.dist.interval(0.95)[1], columns=['95% Predictions_upper'])    # 95% prediction interval
+    predictions_lower = pd.DataFrame(y_d_pred.dist.interval(0.95)[0], columns=['95% Predictions_lower'])
+    Actual_ADR = pd.DataFrame({'Actual ADR':y_d})
+    Date = pd.date_range(start='1/1/2019', end='12/31/2019 23:00', freq = '1H')
+    prediction =  pd.concat([pd.DataFrame({'Date':Date}), Actual_ADR, predictions, predictions_sd, 
+                            predictions_upper, predictions_lower], axis = 1)
 
+    # plot prediction interval
+    fig, ax = plt.subplots(figsize=(22, 10))
+    plt.fill_between(prediction['Date'][start:end], prediction['95% Predictions_lower'][start:end],  prediction['95% Predictions_upper'][start:end], 
+                     label = '95% Prediction Interval', color='gray', alpha=0.5)
+    plt.plot(prediction['Date'][start:end], prediction['Predictions'][start:end], label = 'Predictions', lw=2)
+    plt.scatter(prediction['Date'][start:end], prediction['Predictions'][start:end], lw=3)
+    plt.scatter(prediction['Date'][start:end], prediction['Actual ADR'][start:end], label = 'Actual ADR', color='r', lw=3)
+
+    ax.legend(fontsize = 15)
+    #plt.title('Hourly Power Consumption Actual vs. Predicted Values with Prediction Intervals')
+    plt.xlabel('Time')
+    plt.ylabel('Departures per hour')
+    plt.savefig(save_dir + f'/{model}_departure_{hour}hour_prediction_interval.png', bbox_inches='tight', pad_inches=1)
+
+
+
+
+
+# Data_raw : Data_#과 동일   ->  data_arrival / data_departure
+# Data_m : Data_# 에서 AAR, ADR 뺀 것  -> data_arrival.drop('label', axis = 1) / data_departure.drop('label', axis = 1)
 
 # today
 today = date.today()
@@ -268,6 +306,7 @@ if not os.path.exists(save_dir):
 
 
 
+
 if __name__ =='__main__':
 
     # make Argparser 
@@ -275,30 +314,49 @@ if __name__ =='__main__':
 
     # add arguments
     parser.add_argument('--model', type = str)
-    parser.add_argument('--hour', type = int)
+    #parser.add_argument('--hour', type = int)
 
     # save input to args
     args = parser.parse_args()
 
     # print arguments
     print('\nresult.py')
-    print(f'model : {args.model}')
-    print(f'Prediction hour : {args.hour} \n')
+    print(f'Model : {args.model}\n')
+    #print(f'upto : {args.hour} hour \n')
     
+
     # result
-    if args.hour > 24:
+    print('Training Result')
+    prediction_hour1 = input('Prediction hour : ')
+    if int(prediction_hour1) > 24:
         print('Exceeding 24h is not exist \n')
     else :
         result(
                  model = args.model,
-                 hour = args.hour
+                 hour = int(prediction_hour1)
                  )
     
+
     # max capacity
-    print('Maximum Capacity')
-    inst = input('Select instance : ')
-    prediction_hour = input('Prediction hour : ')
-    if int(prediction_hour) > 24:
-        print('Exceeding 24h is not exist \n')
+    print('\nMaximum Capacity')
+    prediction_hour2 = input('Prediction hour : ')
+    inst = input('Select instance[0-8760] : ')
+    if int(prediction_hour2) > 24:
+        print('\nExceeding 24h is not exist \n')
     else:
-        max_capacity(example = int(inst), hour = int(prediction_hour), model = args.model, )
+        max_capacity(example = int(inst), hour = int(prediction_hour2), model = args.model, )
+    
+
+    # ngboost prediction interval
+    if args.model == 'ngbr':
+        print('\nNGBoost Prediction Interval')
+        prediction_hour3 = input('Prediction hour : ')
+        if int(prediction_hour3) > 24:
+            print('\nExceeding 24h is not exist \n')
+        else:
+            print(f'Select instance[0-8760] : {inst}')
+            plot_result(
+                        start = int(inst), 
+                        model = args.model,
+                        hour = int(prediction_hour3)
+                        )
