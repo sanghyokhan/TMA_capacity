@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from datetime import date
+from datetime import date, datetime, timedelta
 from sklearn.metrics import mean_squared_error, r2_score
 
 import config
@@ -15,7 +15,9 @@ import config
 # option
 warnings.simplefilter('ignore')
 
-
+##### 원하는 시간대 데이터 저장
+##### 원하는 시간대 데이터 불러오기
+#### 원하는 시간데 모델 불러오기
 
 
 
@@ -26,12 +28,19 @@ def result(model, hour):
     clf_departure = joblib.load(config.output + f'{model}_departure_{hour}.bin') 
 
     # load data
-    data_arrival_raw = pd.read_csv( os.path.join(config.input_dir, 'arrival_train.csv'), index_col = 0)
-    data_arrival = data_arrival_raw[data_arrival_raw['taf'] == 6].reset_index(drop = True)   
-    data_arrival = data_arrival.drop('taf', axis = 1)
-    data_departure_raw = pd.read_csv( os.path.join(config.input_dir, 'departure_train.csv'), index_col = 0)
-    data_departure = data_departure_raw[data_departure_raw['taf'] == 6].reset_index(drop = True)            # 맨 처음은 6시간 taf 쓰기
-    data_departure = data_departure.drop('taf', axis = 1)
+    if hour == 1:
+        data_arrival_raw = pd.read_csv( os.path.join(config.input_dir, 'arrival_train.csv'), index_col = 0)
+        data_arrival_raw = data_arrival_raw[data_arrival_raw['taf'] == 6].reset_index(drop = True)
+        data_arrival_raw = data_arrival_raw.drop('taf', axis = 1)
+        data_departure_raw = pd.read_csv( os.path.join(config.input_dir, 'departure_train.csv'), index_col = 0)
+        data_departure_raw = data_departure_raw[data_departure_raw['taf'] == 6].reset_index(drop = True)
+        data_departure_raw = data_departure_raw.drop('taf', axis = 1)
+    else:
+        data_arrival_raw = pd.read_csv( os.path.join(config.input_dir, f'arrival_{hour}hour_train_dataframe_{model}.csv'), index_col = 0)
+        data_departure_raw = pd.read_csv( os.path.join(config.input_dir, f'departure_{hour}hour_train_dataframe_{model}.csv'), index_col = 0)
+    
+    data_arrival = data_arrival_raw
+    data_departure = data_departure_raw
 
     # prediction
     X_a = data_arrival.drop('label', axis = 1).values
@@ -97,19 +106,31 @@ def result(model, hour):
 
 
 
-def max_capacity(example, hour, model):    # 50까지 늘림
+def max_capacity(example, hour, model):    # 80까지 늘림
     
     # load trained model
     clf_arrival = joblib.load(config.output + f'{model}_arrival_{hour}.bin') 
     clf_departure = joblib.load(config.output + f'{model}_departure_{hour}.bin') 
 
     # load data
-    data_arrival_raw = pd.read_csv( os.path.join(config.input_dir, 'arrival_train.csv'), index_col = 0)
-    data_arrival = data_arrival_raw[data_arrival_raw['taf'] == 6].reset_index(drop = True)   
-    data_arrival = data_arrival.drop('taf', axis = 1)
-    data_departure_raw = pd.read_csv( os.path.join(config.input_dir, 'departure_train.csv'), index_col = 0)
-    data_departure = data_departure_raw[data_departure_raw['taf'] == 6].reset_index(drop = True)            # 맨 처음은 6시간 taf 쓰기
-    data_departure = data_departure.drop('taf', axis = 1)
+    if hour == 1:
+        data_arrival_raw = pd.read_csv( os.path.join(config.input_dir, 'arrival_train.csv'), index_col = 0)
+        data_arrival_raw = data_arrival_raw[data_arrival_raw['taf'] == 6].reset_index(drop = True)
+        data_arrival_raw = data_arrival_raw.drop('taf', axis = 1)
+        data_departure_raw = pd.read_csv( os.path.join(config.input_dir, 'departure_train.csv'), index_col = 0)
+        data_departure_raw = data_departure_raw[data_departure_raw['taf'] == 6].reset_index(drop = True)
+        data_departure_raw = data_departure_raw.drop('taf', axis = 1)
+    else:
+        data_arrival_raw = pd.read_csv( os.path.join(config.input_dir, f'arrival_{hour}hour_train_dataframe_{model}.csv'), index_col = 0)
+        data_departure_raw = pd.read_csv( os.path.join(config.input_dir, f'departure_{hour}hour_train_dataframe_{model}.csv'), index_col = 0)
+    
+    data_arrival = data_arrival_raw
+    data_departure = data_departure_raw
+
+    # time
+    time = data_arrival[example:example+1]    # date_departure로 해도 상관없음
+    time = datetime(time['year'][example], time['month'][example], time['day'][example], time['hour'][example])
+    prediction_time = time + timedelta(hours = hour-1)
 
     # extra
     demand = 80
@@ -119,7 +140,7 @@ def max_capacity(example, hour, model):    # 50까지 늘림
     XX_a = np.zeros((1,len(data_a.T)))
     
     original_demand_a = int(data_a[0][0])
-    for i in range(0,demand+1):
+    for i in range(0, demand+1):
         XX_a = np.append(XX_a, data_a, axis = 0)
         XX_a[i,0] = XX_a[i,0] + i - original_demand_a
     
@@ -139,7 +160,7 @@ def max_capacity(example, hour, model):    # 50까지 늘림
     XX_d = np.zeros((1,len(data_d.T)))
     
     original_demand_d = int(data_d[0][1])
-    for i in range(0,demand+1):
+    for i in range(0, demand+1):
         XX_d = np.append(XX_d, data_d, axis = 0)
         XX_d[i,1] = XX_d[i,1] + i - original_demand_d
         
@@ -188,6 +209,9 @@ def max_capacity(example, hour, model):    # 50까지 늘림
 
     # text
     capacity_text = f""" 
+    Current Time : {time}\n
+    Prediction Time : {prediction_time}\n
+    
     * Predicted Max AAR: {max_aar:.1f}\n 
     Predicted AAR : {prediction_a:.1f}\n 
     Actual AAR : {actual_aar}\n 
@@ -208,7 +232,7 @@ def max_capacity(example, hour, model):    # 50까지 늘림
     plt.text(1.1, 0.05, capacity_text,
              fontsize=15, style='italic', transform=ax.transAxes, bbox={'facecolor': 'grey', 'alpha': 0.05, 'pad': 6})
     
-    plt.savefig(save_dir + f'/{model}_{hour}hour_maximum_capaicty.png', bbox_inches='tight', pad_inches=1)
+    plt.savefig(save_dir + f'/{model}_{hour}hour_maximum_capaicty_{example}.png', bbox_inches='tight', pad_inches=1)
 
 
 
@@ -224,12 +248,19 @@ def plot_result(start, model, hour):
     clf_departure = joblib.load(config.output + f'{model}_departure_{hour}.bin') 
 
     # load data
-    data_arrival_raw = pd.read_csv( os.path.join(config.input_dir, 'arrival_train.csv'), index_col = 0)
-    data_arrival = data_arrival_raw[data_arrival_raw['taf'] == 6].reset_index(drop = True)   
-    data_arrival = data_arrival.drop('taf', axis = 1)
-    data_departure_raw = pd.read_csv( os.path.join(config.input_dir, 'departure_train.csv'), index_col = 0)
-    data_departure = data_departure_raw[data_departure_raw['taf'] == 6].reset_index(drop = True)            # 맨 처음은 6시간 taf 쓰기
-    data_departure = data_departure.drop('taf', axis = 1)
+    if hour == 1:
+        data_arrival_raw = pd.read_csv( os.path.join(config.input_dir, 'arrival_train.csv'), index_col = 0)
+        data_arrival_raw = data_arrival_raw[data_arrival_raw['taf'] == 6].reset_index(drop = True)
+        data_arrival_raw = data_arrival_raw.drop('taf', axis = 1)
+        data_departure_raw = pd.read_csv( os.path.join(config.input_dir, 'departure_train.csv'), index_col = 0)
+        data_departure_raw = data_departure_raw[data_departure_raw['taf'] == 6].reset_index(drop = True)
+        data_departure_raw = data_departure_raw.drop('taf', axis = 1)
+    else:
+        data_arrival_raw = pd.read_csv( os.path.join(config.input_dir, f'arrival_{hour}hour_train_dataframe_{model}.csv'), index_col = 0)
+        data_departure_raw = pd.read_csv( os.path.join(config.input_dir, f'departure_{hour}hour_train_dataframe_{model}.csv'), index_col = 0)
+    
+    data_arrival = data_arrival_raw
+    data_departure = data_departure_raw
     y_a = data_arrival['label']
     y_d = data_departure['label']
 
@@ -258,7 +289,7 @@ def plot_result(start, model, hour):
     #plt.title('Hourly Power Consumption Actual vs. Predicted Values with Prediction Intervals')
     plt.xlabel('Time')
     plt.ylabel('Arrivals per hour')
-    plt.savefig(save_dir + f'/{model}_arrival_{hour}hour_prediction_interval.png', bbox_inches='tight', pad_inches=1)
+    plt.savefig(save_dir + f'/{model}_arrival_{hour}hour_prediction_interval_{start}.png', bbox_inches='tight', pad_inches=1)
 
 
     """ departure """
@@ -285,7 +316,7 @@ def plot_result(start, model, hour):
     #plt.title('Hourly Power Consumption Actual vs. Predicted Values with Prediction Intervals')
     plt.xlabel('Time')
     plt.ylabel('Departures per hour')
-    plt.savefig(save_dir + f'/{model}_departure_{hour}hour_prediction_interval.png', bbox_inches='tight', pad_inches=1)
+    plt.savefig(save_dir + f'/{model}_departure_{hour}hour_prediction_interval_{start}.png', bbox_inches='tight', pad_inches=1)
 
 
 

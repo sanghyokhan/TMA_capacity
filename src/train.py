@@ -19,7 +19,7 @@ warnings.simplefilter('ignore')
 
 def run(model, hour):
     
-    # initialize result
+    # result
     global result_arrival, result_departure
 
     """ Arrival """
@@ -221,6 +221,10 @@ def run(model, hour):
         train_data_departure = train_data_departure.drop(['WD', 'WSPD', 'WS_GST', 'VIS', 'WC','RN', 'CA_TOT','CLA_1LYR', 'BASE_1LYR',
                                                          'CLA_2LYR', 'BASE_2LYR', 'CLA_3LYR', 'BASE_3LYR', 'CLA_4LYR', 'BASE_4LYR', 'RVR'], axis=1)
 
+        # save dataframe
+        train_data_arrival.to_csv(f'../input/arrival_{time+1}hour_train_dataframe_{model}.csv')
+        train_data_departure.to_csv(f'../input/departure_{time+1}hour_train_dataframe_{model}.csv')
+
         # split train, validation
         df_train_arrival, df_valid_arrival = train_test_split(train_data_arrival.reset_index(drop = True), test_size=0.1, random_state = 13)
         df_train_departure, df_valid_departure = train_test_split(train_data_departure.reset_index(drop = True), test_size=0.1, random_state = 13)
@@ -228,9 +232,7 @@ def run(model, hour):
     # end for loop
 
     result_arrival.to_csv(f'../result/result_arrival_{model}.csv')
-    train_data_arrival.to_csv(f'../result/final_arrival_train_dataframe_{model}.csv')
     result_departure.to_csv(f'../result/result_departure_{model}.csv')
-    train_data_departure.to_csv(f'../result/final_departure_train_dataframe_{model}.csv')
 
 # end def
 
