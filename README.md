@@ -16,7 +16,7 @@ data <br>
 
 input <br>
 * data_engineering.ipynb에서 training, test data set으로 나누어 저장 <br>
-* P_AAR, P_ADR은 원래 Previous AAR/ADR로 직전 시간의 AAR/ADR을 가져옴  ->  2시간 이상의 시간 예측 시, Previous AAR/ADR에서 직전 시간 Predicted AAR/ADR로 바뀜
+* P_AAR, P_ADR은 원래 Previous AAR/ADR로 직전 시간의 AAR/ADR을 가져옴  ->  2시간 이상의 시간 예측 시, Previous AAR/ADR에서 직전 시간 Predicted previous AAR/ADR로 바뀜
 * Remainder는 원래 직전 시간 "수요 - 실제 AAR/ADR - 캔슬된 비행 수 (+ 0이하 값은 0으로 바꿈)"  ->  2시간 이상의 시간 예측 시, "수요 - Predicted AAR/ADR" 로 바뀜
 <br>
 

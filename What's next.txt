@@ -1,11 +1,11 @@
 
 
 1. 1시간만의 예측이 아닌 24시간까지 예측하도록 모형 수정 -> train.py
-    -> # ngbr 두시간 이상 안됨
+    -> # ngbr 두시간 이상 안됨!!!!!!
 
 2. eda, data preprocessing (scklearn.preprocessing / PCA / dimensionality reduction )  다시
 
-
+3. NGboost hyperparameter tuning
 
 
 
