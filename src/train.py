@@ -78,7 +78,9 @@ def run(model, hour):
                             eval_init_score = None,                 # Init score of eval data.   
                             eval_metric = 'l2',                     # Default: ‘l2’ for LGBMRegressor, ‘logloss’ for LGBMClassifier
                             early_stopping_rounds = 10,             
-                            verbose = False)          
+                            verbose = False)      
+        else :
+            clf_arrival.fit(X_train_a, y_train_a)    
 
         # predict
         train_pred_a = clf_arrival.predict(X_train_a)
@@ -138,6 +140,8 @@ def run(model, hour):
                             eval_metric = 'l2',                     # Default: ‘l2’ for LGBMRegressor, ‘logloss’ for LGBMClassifier
                             early_stopping_rounds = 10,             
                             verbose = False)          
+        else :
+            clf_departure.fit(X_train_d, y_train_d)    
 
         # predict
         train_pred_d = clf_departure.predict(X_train_d)

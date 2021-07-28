@@ -2,7 +2,8 @@
 
 import hyperparameters
 from lightgbm import LGBMRegressor
-from ngboost import NGBRegressor   
+from ngboost import NGBRegressor
+from sklearn import ensemble
 
 models = {
 
@@ -10,6 +11,7 @@ models = {
     'lgbr_departure' : LGBMRegressor(**hyperparameters.lgbr_params_d),
     'ngbr_arrival' : NGBRegressor(**hyperparameters.ngbr_params_a),
     'ngbr_departure' : NGBRegressor(**hyperparameters.ngbr_params_d),
+    'rf' : ensemble.RandomForestRegressor(**hyperparameters.rf)
 
           }
 
