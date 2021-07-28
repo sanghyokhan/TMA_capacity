@@ -14,6 +14,8 @@ import config
 
 # option
 warnings.simplefilter('ignore')
+plt.style.use('fivethirtyeight')
+
 
 ##### 원하는 시간대 데이터 저장
 ##### 원하는 시간대 데이터 불러오기
@@ -53,7 +55,7 @@ def result(model, hour):
 
     """ Feature Importance """
     # arrival
-    if model == 'ngbr':
+    if model == 'ngbr':    # NGBoost는 Normal distribution의 경우 2개의 parameter(mean, sd)가 나오므로 각각의 parameter에 대한 feature importance가 나옴
         imp_arrival = pd.DataFrame({'feature': data_arrival.drop('label', axis = 1).columns, 'importance': clf_arrival.feature_importances_[0]})
     else :
         imp_arrival = pd.DataFrame({'feature': data_arrival.drop('label', axis = 1).columns, 'importance': clf_arrival.feature_importances_})

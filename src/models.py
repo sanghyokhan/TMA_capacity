@@ -11,7 +11,8 @@ models = {
     'lgbr_departure' : LGBMRegressor(**hyperparameters.lgbr_params_d),
     'ngbr_arrival' : NGBRegressor(**hyperparameters.ngbr_params_a),
     'ngbr_departure' : NGBRegressor(**hyperparameters.ngbr_params_d),
-    'rf' : ensemble.RandomForestRegressor(**hyperparameters.rf)
+    'rf_arrival' : ensemble.RandomForestRegressor(**hyperparameters.rf), 
+    'rf_departure' : ensemble.RandomForestRegressor(**hyperparameters.rf)
 
           }
 

@@ -103,7 +103,7 @@ rf = {'n_estimators' : 1000000,
       'max_features' : 'auto', 
       'max_leaf_nodes' : None, 
       'min_impurity_decrease' : 0.0, 
-      'min_impurity_split' : None, 
+      'min_impurity_split' : 0.001,            # for early stopping 
       'bootstrap' : True, 
       'oob_score' : False, 
       'n_jobs' : -1, 
