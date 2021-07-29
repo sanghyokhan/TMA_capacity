@@ -89,8 +89,8 @@ ngbr_params_d = {'Dist' : Normal,              # A distribution from ngboost.dis
                 'verbose' : False,
                 'n_estimators' : 10000000, 
                 'learning_rate' : 0.009,
-                'minibatch_frac' : 0.5,        # the percent subsample of rows to use in each boosting iteration
-                'col_sample' : 0.7,            
+                'minibatch_frac' : 1.0,        # the percent subsample of rows to use in each boosting iteration
+                'col_sample' : 0.6,            
                 'tol' : 1e-5,                  # numerical tolerance to be used in optimization
                 'random_state' : seed}
 
