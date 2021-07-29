@@ -3,7 +3,7 @@
 
 <br>
 
-![Input_data](https://user-images.githubusercontent.com/85796140/126852091-31d6562d-7469-41b6-958d-464f91aaa36e.png)
+![Input_data](https://user-images.githubusercontent.com/85796140/127517195-7f1631d4-28a4-4a3c-b2e3-cbbbae421026.png)
 
 <br>
 <br>
