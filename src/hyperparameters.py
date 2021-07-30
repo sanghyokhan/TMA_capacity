@@ -1,7 +1,7 @@
 # hyperparameters
 
 from sklearn.tree import DecisionTreeRegressor
-from ngboost.distns import Normal
+from ngboost.distns import Normal, Poisson
 from ngboost.scores import CRPScore, MLE
 
 
@@ -69,7 +69,7 @@ tree_learner_params = {'criterion' : "friedman_mse",         # “mse”, “fri
 tree_learner = DecisionTreeRegressor(**tree_learner_params)  # models에서 넣고 가져오려니 오류남
 
 
-ngbr_params_a = {'Dist' : Normal,              # A distribution from ngboost.distns : Normal, LogNormal, Exponential...
+ngbr_params_a = {'Dist' : Poisson,              # A distribution from ngboost.distns : Normal, LogNormal, Exponential...
                 'Score' : MLE,                 # rule to compare probabilistic predictions P̂ to the observed data y, from ngboost.scores : LogScore, CRPScore...
                 'Base' : tree_learner,         # base learner to use in the boosting algorithm
                 'natural_gradient' : True,     # logical flag indicating whether the natural gradient should be used
@@ -82,7 +82,7 @@ ngbr_params_a = {'Dist' : Normal,              # A distribution from ngboost.dis
                 'random_state' : seed}
 
 
-ngbr_params_d = {'Dist' : Normal,              # A distribution from ngboost.distns : Normal, LogNormal, Exponential...
+ngbr_params_d = {'Dist' : Poisson,              # A distribution from ngboost.distns : Normal, LogNormal, Exponential...
                 'Score' : MLE,                 # rule to compare probabilistic predictions P̂ to the observed data y, from ngboost.scores : LogScore, CRPScore...
                 'Base' : tree_learner,         # base learner to use in the boosting algorithm
                 'natural_gradient' : True,     # logical flag indicating whether the natural gradient should be used

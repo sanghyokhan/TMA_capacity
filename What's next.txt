@@ -6,7 +6,7 @@
 2. eda, data preprocessing (scklearn.preprocessing / PCA / dimensionality reduction )  다시
     -> 새로운 피쳐 많이 만들고 주성분분석으로 거르는 것 해보기
 
-3. NGboost hyperparameter tuning
+3. NGboost 에서 poisson dist 시도
 
 4. XGBoost 추가
 
