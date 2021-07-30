@@ -21,7 +21,7 @@ input <br>
 <br>
 
 models <br>
-(-> github tracking X -> models 폴더 하나 만들기) <br>
+(-> git ignored -> models 폴더 하나 만들고 학습된 모델 저장하기) <br>
 * 학습된 model 저장 <br>
 * lgbr_pval_a.csv, lgbr_pval_d.csv, lgbr_predict_a.csv,lgbr_predict_d.csv 로 CV data 저장 -> stacking <br>
 <br>
