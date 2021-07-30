@@ -189,7 +189,7 @@ def max_capacity(example, hour, model):    # 80까지 늘림
     """ plot """
     plt.figure(figsize=(15,15))
     plt.title('Maximum Capacity', fontsize=30)
-    plt.xlabel('Estimated Demands', fontsize=25)
+    plt.xlabel('Demands', fontsize=25)
     plt.ylabel('Capacity', fontsize=25)
     ax = plt.subplot()
 
@@ -321,7 +321,7 @@ def ngbr_max_capacity(example, hour, model):    # 80까지 늘림
     max_cap = int(max(data_arrival['label'] + data_departure['label']))
     max_capacity = np.zeros(demand+1)
     for i in range(0,demand*2+1,2):
-        if round(i*data_a[0,0]/(data_a[0,0]+data_d[0,1])) >=75:
+        if round(i*data_a[0,0]/(data_a[0,0]+data_d[0,1])) >=75:        # arrival, departure의 demand 비율을 유지하며 늘림
             capa_arr = YYYY_a.iloc[75][0]
         elif round(i*data_d[0,1]/(data_a[0,0]+data_d[0,1])) >=75:
             capa_dep = YYYY_d.iloc[75][0]
@@ -331,36 +331,44 @@ def ngbr_max_capacity(example, hour, model):    # 80까지 늘림
         max_capacity[int(i/2)] = capa_arr + capa_dep
 
 
-
-    
     """ plot """
     plt.figure(figsize=(15,15))
     plt.title('Maximum Capacity', fontsize=30)
-    plt.xlabel('Estimated Demands', fontsize=25)
+    plt.xlabel('Demands', fontsize=25)
     plt.ylabel('Capacity', fontsize=25)
     ax = plt.subplot()
 
     plt.plot(XXXX_a, YYYY_a, linewidth=4, label = 'Arrival')    # Arrival
-    plt.plot(XXXX_d, YYYY_d, linewidth=4, label = 'Departure')    # Departure
-    plt.plot(XXXX_a[:-5]+XXXX_d[:-5], max_capacity[:-5], linewidth=4, label = 'Total')    # Capacity - 안 예뻐서 뒤에 55개 자름
-    plt.plot(XXXX_a[:-5]+XXXX_d[:-5], [max_cap]*(demand-4), linewidth=4, label = f'Empirical Maximum ({max_cap})')    # 데이터 상 max capacity
-    
     plt.plot(data_a[0,0], prediction_a,'xb', markersize = 8)    # 원래 arrival 예측값
     plt.plot(data_a[0,0], actual_aar,'ob', markersize = 5)    # actual aar
+
+    plt.plot(XXXX_d, YYYY_d, linewidth=4, label = 'Departure')    # Departure
     plt.plot(data_d[0,1], prediction_d,'xr', markersize = 8)    # 원래 departure 예측값
     plt.plot(data_d[0,1], actual_adr,'or', markersize = 5)    # actual adr
+
+    plt.plot(XXXX_a[:-5]+XXXX_d[:-5], max_capacity[:-5], linewidth=4, label = 'Total')    # Capacity - 안 예뻐서 뒤에 55개 자름
     plt.plot(data_a[0,0]+data_d[0,1], prediction_a + prediction_d,'yx', markersize = 10)    # 원래 capacity 예측값
     plt.plot(data_a[0,0]+data_d[0,1], actual_aar + actual_adr,'yo', markersize = 8)    # actual 
 
-    # plot prediction interval
+    plt.plot(XXXX_a[:-5]+XXXX_d[:-5], [max_cap]*(demand-4), linewidth=4, label = f'Empirical Maximum ({max_cap})')    # 데이터 상 max capacity
+    
+
+    """ plot prediction interval """
     prediction_df_a =  pd.concat([YYYY_a, YYYY_a_sd, YYYY_a_upper, YYYY_a_lower], axis = 1)
     prediction_df_d =  pd.concat([YYYY_d, YYYY_d_sd, YYYY_d_upper, YYYY_d_lower], axis = 1)
     ##########################################################################################################################################
+    # 둘 사이에 covariance는 어카지???
+    # Var(aX+bY) = a^2 * Var(X) + b^2 * Var(Y) + 2cov(aX, bY)?
     a_ = data_a[0,0]/(data_a[0,0]+data_d[0,1])
     b_ = data_d[0,1]/(data_a[0,0]+data_d[0,1])
-    capa_sd = pd.DataFrame({'capa_sd' : ((a_**2)*((prediction_df_a['Arrival Standard Deviation'])**2) 
-                                        + (b_**2)*((prediction_df_d['Departure Standard Deviation'])**2))**(1/2)})
-    ########################### 둘 사이에 covariance는 어카지??? ###########################
+    cov_ = np.cov(data_arrival_raw['label'].values, data_departure_raw['label'].values)[0,1]    # 일단 cov를 aar과 adr의 cov로 함
+    capa_sd = pd.DataFrame({
+                            'capa_sd' : (
+                                        (a_**2)*((prediction_df_a['Arrival Standard Deviation'])**2) 
+                                        + (b_**2)*((prediction_df_d['Departure Standard Deviation'])**2)
+                                        + 2*a_*b_*cov_
+                                        )**(1/2)
+                            })
     upper = max_capacity + 1.96*capa_sd.T.values
     lower = max_capacity - 1.96*capa_sd.T.values
     capa_upper = pd.DataFrame({'capa_upper' : upper[0]})

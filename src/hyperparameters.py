@@ -59,40 +59,42 @@ lgbr_params_d = {'boosting_type' : 'gbdt',                  # 'dart' 는 계산�
 
 
 tree_learner_params = {'criterion' : "friedman_mse",         # “mse”, “friedman_mse”, “mae”, “poisson”
-                        'min_samples_split' : 2,             # The minimum number of samples required to split an internal node
+                        'min_samples_split' : 3,             # The minimum number of samples required to split an internal node
                         'min_samples_leaf' : 1,              # The minimum number of samples required to be at a leaf node
                         'min_weight_fraction_leaf' : 0.0,    # The minimum weighted fraction of the sum total of weights required to be at a leaf node
                         'max_depth' : None,                  # The maximum depth of the tree
-                        'max_leaf_nodes' : 63,              # Grow a tree with 'max_leaf_nodes' in best-first fashion
+                        'max_leaf_nodes' : 172,              # Grow a tree with 'max_leaf_nodes' in best-first fashion
                         'splitter' : "best",                 # The strategy used to choose the split at each node
                         'random_state' : seed}
 tree_learner = DecisionTreeRegressor(**tree_learner_params)  # models에서 넣고 가져오려니 오류남
 
 
-ngbr_params_a = {'Dist' : Poisson,              # A distribution from ngboost.distns : Normal, LogNormal, Exponential...
+                                               # Poisson이 Normal보다 결과가 좋지않음
+ngbr_params_a = {'Dist' : Normal,              # A distribution from ngboost.distns : Normal, LogNormal, Exponential...
                 'Score' : MLE,                 # rule to compare probabilistic predictions P̂ to the observed data y, from ngboost.scores : LogScore, CRPScore...
                 'Base' : tree_learner,         # base learner to use in the boosting algorithm
                 'natural_gradient' : True,     # logical flag indicating whether the natural gradient should be used
                 'verbose' : False,
                 'n_estimators' : 10000000, 
                 'learning_rate' : 0.009,
-                'minibatch_frac' : 0.5,        # the percent subsample of rows to use in each boosting iteration
-                'col_sample' : 0.7,            
+                'minibatch_frac' : 0.7,        # the percent subsample of rows to use in each boosting iteration
+                'col_sample' : 0.8,            
                 'tol' : 1e-5,                  # numerical tolerance to be used in optimization
                 'random_state' : seed}
 
 
-ngbr_params_d = {'Dist' : Poisson,              # A distribution from ngboost.distns : Normal, LogNormal, Exponential...
+ngbr_params_d = {'Dist' : Normal,              # A distribution from ngboost.distns : Normal, LogNormal, Exponential...
                 'Score' : MLE,                 # rule to compare probabilistic predictions P̂ to the observed data y, from ngboost.scores : LogScore, CRPScore...
                 'Base' : tree_learner,         # base learner to use in the boosting algorithm
                 'natural_gradient' : True,     # logical flag indicating whether the natural gradient should be used
                 'verbose' : False,
                 'n_estimators' : 10000000, 
                 'learning_rate' : 0.009,
-                'minibatch_frac' : 1.0,        # the percent subsample of rows to use in each boosting iteration
-                'col_sample' : 0.6,            
+                'minibatch_frac' : 0.7,        # the percent subsample of rows to use in each boosting iteration
+                'col_sample' : 0.8,            
                 'tol' : 1e-5,                  # numerical tolerance to be used in optimization
                 'random_state' : seed}
+
 
 rf = {'n_estimators' : 1000000,
       'criterion' : 'mse', 

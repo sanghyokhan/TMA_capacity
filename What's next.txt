@@ -4,15 +4,13 @@
     -> # ngbr 두시간 이상 안됨!!!!!!
 
 2. eda, data preprocessing (scklearn.preprocessing / PCA / dimensionality reduction )  다시
-    -> 새로운 피쳐 많이 만들고 주성분분석으로 거르는 것 해보기
-
-3. NGboost 에서 poisson dist 시도
+    -> 새로운 피쳐 많이 만들고 주성분분석으로 거르는 것 다시 해보기
 
 4. XGBoost 추가
 
 5. predict.py 만들기
 
-7 .ngboost에서 maxcapacity 그릴 때, capacity의 sd는 어떻게 표현할까(corvariance를 어케??)
+7 .NGboost에서 maxcapacity 그릴 때, capacity의 sd는 어떻게 표현할까(corvariance를 어케??)
 
 
 
