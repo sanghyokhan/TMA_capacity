@@ -96,7 +96,7 @@ ngbr_params_d = {'Dist' : Normal,              # A distribution from ngboost.dis
                 'random_state' : seed}
 
 
-rf = {'n_estimators' : 1000000,
+rf = {'n_estimators' : 1000,
       'criterion' : 'mse', 
       'max_depth' : None, 
       'min_samples_split' : 2, 
