@@ -184,7 +184,8 @@ def max_capacity(example, hour, model):    # 80까지 늘림
             capa_arr = YYYY_a[round(i*data_a[0,0]/(data_a[0,0]+data_d[0,1]))]
             capa_dep = YYYY_d[round(i*data_d[0,1]/(data_a[0,0]+data_d[0,1]))]
         max_capacity[int(i/2)] = capa_arr + capa_dep
-    
+    max_capa = float(max(max_capacity))
+
     
     """ plot """
     plt.figure(figsize=(15,15))
@@ -221,7 +222,7 @@ def max_capacity(example, hour, model):    # 80까지 늘림
     Actual ADR : {actual_adr}\n
     EDD : {edd}\n\n
     
-    * Predicted Max Capacity: {max_aar + max_adr:.1f}\n
+    * Predicted Max Capacity: {max_capa:.1f}\n
     Predicted Rate : {prediction_a + prediction_d:.1f}\n
     Actual Rate : {actual_aar + actual_adr}\n
     Demand : {ead + edd}\n
@@ -552,8 +553,8 @@ if __name__ =='__main__':
 
     # max capacity
     print('\nMaximum Capacity')
-    inst = input('Current Time [yyyymmddHH] : ')
-    inst = pd.to_datetime(inst, format='%Y%m%d%H')
+    inst = input('Current Time [yyyymmdd HHMM] : ')
+    inst = pd.to_datetime(inst, format='%Y%m%d %H%M')
     inst = daterange[daterange['time'] == inst].index[0]
     prediction_hour2 = input('Prediction after : ')
     if int(prediction_hour2) > 24:
