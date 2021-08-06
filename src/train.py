@@ -118,7 +118,7 @@ def run(model, hour):
         # model fitting
         clf_departure = models.models[model + '_departure']
 
-        # ngbr_arrival
+        # ngbr_departure
         if model == 'ngbr':                         
             clf_departure.fit(X_train_d, y_train_d,
                             X_val = X_val_d,
@@ -129,7 +129,7 @@ def run(model, hour):
                             val_loss_monitor = None,                # custom score or set of scores to track on the validation set during training
                             early_stopping_rounds = 10)
         
-        # lgbr_arrival
+        # lgbr_departure
         elif model == 'lgbr':                                              
             clf_departure.fit(X_train_d, y_train_d,
                             sample_weight = None,                   # Weights of training data
