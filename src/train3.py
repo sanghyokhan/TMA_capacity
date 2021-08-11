@@ -217,6 +217,8 @@ def run(model, hour):
         train_data_departure['label'] = np.roll(train_data_departure['label'], -1 * time)
         train_data_departure['EAD'] = np.roll(train_data_departure['EAD'], -1 * time)
         train_data_departure['EDD'] = np.roll(train_data_departure['EDD'], -1 * time)        
+        
+        ##### 날짜도 돌려야할 듯 #####
 
         # NaN data to 0
         for i in range(1,time+1):

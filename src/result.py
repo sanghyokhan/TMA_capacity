@@ -417,7 +417,8 @@ def ngbr_max_capacity(example, hour, model):    # 80까지 늘림
     plt.savefig(save_dir + f'/{model}_{hour}hour_maximum_capaicty_{example}.png', bbox_inches='tight', pad_inches=1)
 
 
-
+##### ngb로 24시간 max capa 보여주는 그래프 그리기 ####
+##### ead importance 줄이기 ####
 
 
 #ngboost

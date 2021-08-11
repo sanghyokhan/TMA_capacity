@@ -1,8 +1,5 @@
 
 
-1. 1시간만의 예측이 아닌 24시간까지 예측하도록 모형 수정 -> train.py
-    -> # ngbr 두시간 이상 안됨!!!!!!
-
 2. eda, data preprocessing (scklearn.preprocessing / PCA / dimensionality reduction )  다시
     -> 새로운 피쳐 많이 만들고 주성분분석으로 거르는 것 다시 해보기
 
@@ -11,6 +8,7 @@
 5. predict.py 만들기 -> 크롤링연결보다는 띄워주고 칠 수 있게 하는게 나을 듯
 
 7 .NGboost에서 maxcapacity 그릴 때, capacity의 sd는 어떻게 표현할까(corvariance를 어케??)
+-> 연관있는 feature만 골라서 새로운 drp-arr cov를 찾아 적용
 
 
 
