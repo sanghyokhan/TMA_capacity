@@ -102,7 +102,7 @@ def run(model, hour):
         # print evaluate
         print(f'{time}hour Arrival train RMSE = {train_rmse_a}')
         print(f'{time}hour Arrival validation RMSE = {val_rmse_a}')
-        print(f'{time}hour Arrival train R\u00b2 = {train_r2_a}')        # \u00b2 = square
+        print(f'{time}hour Arrival train R\u00b2 = {train_r2_a}')        # \u00b2 = square(^2)
         print(f'{time}hour Arrival validation R\u00b2 = {val_r2_a}')
 
         # save result
@@ -210,24 +210,42 @@ def run(model, hour):
         train_data_departure['Arrival_remainder'] = remainder_arrival
         train_data_departure['Departure_remainder'] = remainder_departure
 
-        # roll AAR to predict following hour
+        # roll AAR & Demand & datetime to predict following hour
         train_data_arrival['label'] = np.roll(train_data_arrival['label'], -1 * time)
         train_data_arrival['EAD'] = np.roll(train_data_arrival['EAD'], -1 * time)
-        train_data_arrival['EDD'] = np.roll(train_data_arrival['EDD'], -1 * time)        
+        train_data_arrival['EDD'] = np.roll(train_data_arrival['EDD'], -1 * time)     
+        train_data_arrival['year'] = np.roll(train_data_arrival['year'], -1 * time)     
+        train_data_arrival['month'] = np.roll(train_data_arrival['month'], -1 * time)     
+        train_data_arrival['day'] = np.roll(train_data_arrival['day'], -1 * time)     
+        train_data_arrival['hour'] = np.roll(train_data_arrival['hour'], -1 * time)     
+        train_data_arrival['DayName'] = np.roll(train_data_arrival['DayName'], -1 * time)     
         train_data_departure['label'] = np.roll(train_data_departure['label'], -1 * time)
         train_data_departure['EAD'] = np.roll(train_data_departure['EAD'], -1 * time)
-        train_data_departure['EDD'] = np.roll(train_data_departure['EDD'], -1 * time)        
-        
-        ##### 날짜도 돌려야할 듯 #####
+        train_data_departure['EDD'] = np.roll(train_data_departure['EDD'], -1 * time)   
+        train_data_departure['year'] = np.roll(train_data_departure['year'], -1 * time)   
+        train_data_departure['month'] = np.roll(train_data_departure['month'], -1 * time)   
+        train_data_departure['day'] = np.roll(train_data_departure['day'], -1 * time)   
+        train_data_departure['hour'] = np.roll(train_data_departure['hour'], -1 * time)   
+        train_data_departure['DayName'] = np.roll(train_data_departure['DayName'], -1 * time)   
 
         # NaN data to 0
         for i in range(1,time+1):
             train_data_arrival['label'].iloc[-1*i] = 0
-            train_data_arrival['EAD'].iloc[-1*i] = 0
+            train_data_arrival['EAD'].iloc[-1*i] = 0    
             train_data_arrival['EDD'].iloc[-1*i] = 0
+            train_data_arrival['year'].iloc[-1*i] = 0
+            train_data_arrival['month'].iloc[-1*i] = 0
+            train_data_arrival['day'].iloc[-1*i] = 0
+            train_data_arrival['hour'].iloc[-1*i] = 0
+            train_data_arrival['DayName'].iloc[-1*i] = 0
             train_data_departure['label'].iloc[-1*i] = 0
             train_data_departure['EAD'].iloc[-1*i] = 0
             train_data_departure['EDD'].iloc[-1*i] = 0
+            train_data_departure['year'].iloc[-1*i] = 0
+            train_data_departure['month'].iloc[-1*i] = 0
+            train_data_departure['day'].iloc[-1*i] = 0
+            train_data_departure['hour'].iloc[-1*i] = 0
+            train_data_departure['DayName'].iloc[-1*i] = 0
         
         # drop METAR
         train_data_arrival = train_data_arrival.drop(['WD', 'WSPD', 'WS_GST', 'VIS', 'WC','RN', 'CA_TOT','CLA_1LYR', 'BASE_1LYR',
