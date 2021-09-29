@@ -124,9 +124,10 @@ def max_capacity(example, hour, model):    # 80까지 늘림
     data_departure = data_departure_raw
 
     # time
-    time = data_arrival[example:example+1]    # date_departure로 해도 상관없음
-    time = datetime(time['year'][example], time['month'][example], time['day'][example], time['hour'][example])
-    prediction_time = time + timedelta(hours = hour-1)
+    example = example + 1
+    time = data_arrival[example-hour:example-hour+1]    # date_departure로 해도 상관없음
+    time = datetime(time['year'][example-hour], time['month'][example-hour], time['day'][example-hour], time['hour'][example-hour])
+    prediction_time = time + timedelta(hours = hour)
 
     # extra
     demand = 80
@@ -261,10 +262,10 @@ def ngbr_max_capacity(example, hour, model):    # 80까지 늘림
     data_departure = data_departure_raw
 
     # time
-    time = data_arrival[example:example+1]    # date_departure로 해도 상관없음
-    time = datetime(time['year'][example], time['month'][example], time['day'][example], time['hour'][example])
-    prediction_time = time + timedelta(hours = hour-1)
-
+    example = example + 1
+    time = data_arrival[example-hour:example-hour+1]    # date_departure로 해도 상관없음
+    time = datetime(time['year'][example-hour], time['month'][example-hour], time['day'][example-hour], time['hour'][example-hour])
+    prediction_time = time + timedelta(hours = hour)
     # extra
     demand = 80
     
@@ -417,8 +418,7 @@ def ngbr_max_capacity(example, hour, model):    # 80까지 늘림
     plt.savefig(save_dir + f'/{model}_{hour}hour_maximum_capaicty_{example}.png', bbox_inches='tight', pad_inches=1)
 
 
-##### ngb로 24시간 max capa 보여주는 그래프 그리기 #####
-##### ead importance 줄이기 #####
+
 
 
 #ngboost
