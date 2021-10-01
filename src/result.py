@@ -119,12 +119,12 @@ def max_capacity(example, hour, model):    # 80까지 늘림
     else:
         data_arrival_raw = pd.read_csv( os.path.join(config.input_dir, f'arrival_{hour}hour_train_dataframe_{model}.csv'), index_col = 0)
         data_departure_raw = pd.read_csv( os.path.join(config.input_dir, f'departure_{hour}hour_train_dataframe_{model}.csv'), index_col = 0)
-    
+        example = example + 1
+
     data_arrival = data_arrival_raw
     data_departure = data_departure_raw
 
     # time
-    example = example + 1
     time = data_arrival[example-hour:example-hour+1]    # date_departure로 해도 상관없음
     time = datetime(time['year'][example-hour], time['month'][example-hour], time['day'][example-hour], time['hour'][example-hour])
     prediction_time = time + timedelta(hours = hour)
@@ -257,14 +257,14 @@ def ngbr_max_capacity(example, hour, model):    # 80까지 늘림
     else:
         data_arrival_raw = pd.read_csv( os.path.join(config.input_dir, f'arrival_{hour}hour_train_dataframe_{model}.csv'), index_col = 0)
         data_departure_raw = pd.read_csv( os.path.join(config.input_dir, f'departure_{hour}hour_train_dataframe_{model}.csv'), index_col = 0)
-    
+        example = example + 1
+
     data_arrival = data_arrival_raw
     data_departure = data_departure_raw
 
     # time
-    example = example + 1
-    time = data_arrival[example-hour:example-hour+1]    # date_departure로 해도 상관없음
-    time = datetime(time['year'][example-hour], time['month'][example-hour], time['day'][example-hour], time['hour'][example-hour])
+    time = data_arrival[example:example+1]    # date_departure로 해도 상관없음
+    time = datetime(time['year'][example], time['month'][example], time['day'][example], time['hour'][example])
     prediction_time = time + timedelta(hours = hour)
     # extra
     demand = 80
